@@ -6873,7 +6873,8 @@ int CPUMatrix<ElemType>::GetMaxNumThreads()
 template <class ElemType>
 void CPUMatrix<ElemType>::SetCompatibleMode()
 {
-    // not supported in MKLML yet, which means there might be some small numeric differences between various AVX versions
+    // mkl_cbwr_set not supported in MKLML yet
+    // Explanation on numeric diff: https://software.intel.com/en-us/articles/introduction-to-the-conditional-numerical-reproducibility-cnr
     // #ifdef USE_MKL
     //    if (mkl_cbwr_set(MKL_CBWR_COMPATIBLE) != MKL_CBWR_SUCCESS)
     //        RuntimeError("Could not set MKL compatible mode.");
