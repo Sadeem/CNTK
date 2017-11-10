@@ -30,6 +30,11 @@ have_mkl=no
 mkl_path=
 mkl_check=include/mkl_version.h
 
+# MKL-DNN
+have_mkldnn=no
+mkldnn_path=
+mkldnn_check=include/mkldnn.h
+
 # Experimental OpenBLAS support.
 have_openblas=no
 openblas_path=
@@ -115,6 +120,7 @@ default_path_list="/usr /usr/local /opt /opt/local /lib /usr/lib"
 
 # List from best to worst choice
 default_mkls="mklml/$mklml_version"
+default_mkldnn=""
 default_openblas=""
 
 default_boost="boost-1.60.0"
@@ -171,6 +177,11 @@ function find_dir ()
 function find_mkl ()
 {
     find_dir "$default_mkls" "$mkl_check"
+}
+
+function find_mkldnn ()
+{
+    find_dir "$default_mkldnn" "mkldnn_check"
 }
 
 function find_openblas ()
@@ -378,7 +389,7 @@ function show_help ()
     echo "  --with-cudnn[=directory] $(show_default $(find_cudnn))"
     echo "  --with-nccl[=directory] $(show_default $(find_nccl))"
     echo "  --with-mkl[=directory] $(show_default $(find_mkl))"
-    echo "  --with-mkl-sequential[=directory] $(show_default $(find_mkl))"
+    echo "  --with-mkldnn[=directory] $(show_default $(find_mkldnn))"
     echo "  --with-openblas[=directory] (experimental) $(show_default $(find_openblas))"
     echo "  --with-buildtype=(debug|release) $(show_default $default_buildtype)"
     echo "  --with-kaldi[=directory] $(show_default $(find_kaldi))"
@@ -759,6 +770,27 @@ do
                 fi
             fi
             ;;
+        --with-mkldnn*)
+            have_mkldnn=yes
+            if test x$optarg = x
+            then
+                mkldnn_path=$(find_mkldnn)
+                if test x$mkldnn_path = x
+                then
+                    echo "Cannot find MKL-DNN directory"
+                    echo "Please specify a value for --with-mkldnn"
+                    exit 1
+                fi
+            else
+                if test $(check_dir $optarg $mkldnn_check) = yes
+                then
+                    mkldnn_path=$optarg
+                else
+                    echo "Invalid MKLDNN directory $optarg"
+                    exit 1
+                fi
+            fi
+            ;;
         --with-openblas*)
             have_openblas=yes
             mathlib=openblas
@@ -931,7 +963,7 @@ then
     echo Defaulting to --with-buildtype=release
 fi
 
-# If no math library was specified, search for mkl
+# If no math library was specified, search for mkl and mkldnn
 if test x$have_mkl = xno && test x$have_openblas = xno
 then
     mkl_path=$(find_mkl)
@@ -943,6 +975,12 @@ then
     else
         mathlib=mkl
     fi
+    mkldnn_path=$(find_mkldnn)
+    if test x$mkldnn_path = x
+    then
+        echo "Cannot find MKL-DNN library."
+        echo "Please specify --with-mkldnn with a path."
+        exit 1
 fi
 
 # If no cuda library specified, search for one
