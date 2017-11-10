@@ -2,8 +2,7 @@
 
 ## Latest news
 
-***2017-11-10.*** Switch from CNTKCustomMKL to MKLML in [Intel MKL-DNN](https://github.com/01org/mkl-dnn)
-MKLML is released with [Intel MKL-DNN](https://github.com/01org/mkl-dnn/releases). It is a trimmed version of Intel MKL, similar to CNTKCustomMKL. To set it up:
+***2017-11-10.*** Switch from CNTKCustomMKL to Intel MKLML. MKLML is released with [Intel MKL-DNN](https://github.com/01org/mkl-dnn/releases) as a trimmed version of Intel MKL for MKL-DNN. To set it up:
 
 On Linux:
 
